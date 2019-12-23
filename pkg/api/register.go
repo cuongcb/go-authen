@@ -23,5 +23,6 @@ var Register = func(w http.ResponseWriter, r *http.Request) {
 	if err := service.CreateUser(user.Email, user.Password); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s", "internal server error")
+		fmt.Println(err)
 	}
 }
