@@ -1,28 +1,38 @@
 package api
 
 import (
-	// "encoding/json"
 	"encoding/json"
 	"fmt"
-	"github.com/cuongcb/go-authen/pkg/service"
 	"net/http"
+
+	"github.com/cuongcb/go-authen/pkg/dtos"
+	"github.com/cuongcb/go-authen/pkg/service"
 )
 
 // Register is in charge of recording a new user into system
 var Register = func(w http.ResponseWriter, r *http.Request) {
-	user := struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}{}
+	w.Header().Add("Content-type", "application/json")
 
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "not supported method"})
+		return
+	}
+
+	user := dtos.User{}
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "%s", err)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
 	}
 
-	if err := service.CreateUser(user.Email, user.Password); err != nil {
+	newUser, err := service.CreateUser(user.Email, user.Password)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "%s", "internal server error")
+		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
 		fmt.Println(err)
 	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(&newUser)
 }

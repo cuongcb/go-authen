@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/cuongcb/go-authen/pkg/api"
-	"github.com/cuongcb/go-authen/pkg/service"
 	"log"
 	"net/http"
+
+	"github.com/cuongcb/go-authen/pkg/api"
+	"github.com/cuongcb/go-authen/pkg/service"
 )
 
 func main() {
-	fmt.Println("Go Authentication Starting...")
+	fmt.Println("*** Go Authentication Server ***")
 
 	service.Init()
 
@@ -22,5 +23,6 @@ func main() {
 		Handler: mux,
 	}
 
+	fmt.Println("Listening on: 127.0.0.1:8080")
 	log.Fatal(s.ListenAndServe())
 }

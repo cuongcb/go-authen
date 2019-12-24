@@ -1,11 +1,32 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
+
+	"github.com/cuongcb/go-authen/pkg/dtos"
+	"github.com/cuongcb/go-authen/pkg/service"
 )
 
 // Home ...
 var Home = func(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%s", "/")
+	w.Header().Add("Content-type", "application/json")
+
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "not supported method"})
+
+		return
+	}
+
+	users, err := service.GetUserList()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string][]*dtos.User{"users": users})
 }
