@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/cuongcb/go-authen/pkg/dtos"
@@ -30,7 +29,7 @@ var Register = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
-		fmt.Println(err)
+		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
