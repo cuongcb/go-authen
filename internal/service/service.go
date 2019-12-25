@@ -2,8 +2,8 @@ package service
 
 import (
 	"github.com/cuongcb/go-authen/internal/dtos"
-	"github.com/cuongcb/go-authen/internal/service/internal/dao/mysql"
-	"github.com/cuongcb/go-authen/internal/service/internal/model"
+	"github.com/cuongcb/go-authen/internal/service/dao/mysql"
+	"github.com/cuongcb/go-authen/internal/service/model"
 )
 
 type serviceContext struct {

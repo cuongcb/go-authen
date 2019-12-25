@@ -2,10 +2,9 @@ package mysql
 
 import (
 	"database/sql"
-
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/cuongcb/go-authen/internal/service/internal/model"
+	"github.com/cuongcb/go-authen/internal/service/model"
 )
 
 // Dao ...

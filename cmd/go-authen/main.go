@@ -24,6 +24,6 @@ func main() {
 		Handler: mux,
 	}
 
-	fmt.Println("Listening on: 127.0.0.1:8080")
+	fmt.Println("Listening on --> localhost:8080")
 	log.Fatal(s.ListenAndServe())
 }
