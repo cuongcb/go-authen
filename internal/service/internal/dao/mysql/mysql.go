@@ -1,10 +1,11 @@
-package sql
+package mysql
 
 import (
 	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/cuongcb/go-authen/pkg/service/internal/model"
+	"github.com/cuongcb/go-authen/internal/service/internal/model"
 )
 
 // Dao ...
@@ -54,6 +55,14 @@ func (d *Dao) GetAll() ([]*model.User, error) {
 	}
 	defer rows.Close()
 
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
+
+		return nil, sql.ErrNoRows
+	}
+
 	var users []*model.User
 	for rows.Next() {
 		u := &model.User{}
@@ -74,22 +83,33 @@ func (d *Dao) GetAll() ([]*model.User, error) {
 // Get ...
 func (d *Dao) Get(id uint64) (*model.User, error) {
 	query := "SELECT * FROM user WHERE id = ?"
-	rows, err := d.db.Query(query, id)
-	if err != nil {
+	row := d.db.QueryRow(query, id)
+
+	u := &model.User{}
+	if err := row.Scan(&u.ID,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+		&u.Email,
+		&u.Password); err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var u *model.User
-	if rows.Next() {
-		if err := rows.Scan(&u.ID,
-			&u.CreatedAt,
-			&u.UpdatedAt,
-			&u.Email,
-			&u.Password); err != nil {
-			return nil, err
-		}
+	return u, nil
+}
+
+// GetByMail ...
+func (d *Dao) GetByMail(email string) (*model.User, error) {
+	query := "SELECT * FROM user WHERE email = ?"
+	row := d.db.QueryRow(query, email)
+
+	u := &model.User{}
+	if err := row.Scan(&u.ID,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+		&u.Email,
+		&u.Password); err != nil {
+		return nil, err
 	}
 
-	return u, rows.Err()
+	return u, nil
 }

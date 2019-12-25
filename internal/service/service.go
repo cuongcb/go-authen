@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/cuongcb/go-authen/pkg/dtos"
-	"github.com/cuongcb/go-authen/pkg/service/internal/dao/sql"
-	"github.com/cuongcb/go-authen/pkg/service/internal/model"
+	"github.com/cuongcb/go-authen/internal/dtos"
+	"github.com/cuongcb/go-authen/internal/service/internal/dao/mysql"
+	"github.com/cuongcb/go-authen/internal/service/internal/model"
 )
 
 type serviceContext struct {
@@ -14,13 +14,14 @@ var ctx serviceContext
 
 type repository interface {
 	Get(uint64) (*model.User, error)
+	GetByMail(string) (*model.User, error)
 	GetAll() ([]*model.User, error)
 	Save(*model.User) (*model.User, error)
 }
 
 // Init ...
 func Init() {
-	repo, err := sql.New()
+	repo, err := mysql.New()
 	if err != nil {
 		panic(err)
 	}
@@ -79,6 +80,20 @@ func GetUser(id uint64) (*dtos.User, error) {
 
 	return &dtos.User{
 		ID:       id,
+		Email:    user.Email,
+		Password: user.Password,
+	}, nil
+}
+
+// GetUserByMail ...
+func GetUserByMail(email string) (*dtos.User, error) {
+	user, err := ctx.repo.GetByMail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.User{
+		ID:       user.ID,
 		Email:    user.Email,
 		Password: user.Password,
 	}, nil

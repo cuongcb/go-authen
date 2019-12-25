@@ -1,11 +1,11 @@
-package api
+package handler
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/cuongcb/go-authen/pkg/dtos"
-	"github.com/cuongcb/go-authen/pkg/service"
+	"github.com/cuongcb/go-authen/internal/dtos"
+	"github.com/cuongcb/go-authen/internal/service"
 )
 
 // Home ...
