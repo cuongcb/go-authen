@@ -13,8 +13,9 @@ var Register = func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-type", "application/json")
 
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(map[string]string{"error": "not supported method"})
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		// w.WriteHeader(http.StatusMethodNotAllowed)
+		// json.NewEncoder(w).Encode(map[string]string{"error": "not supported method"})
 		return
 	}
 

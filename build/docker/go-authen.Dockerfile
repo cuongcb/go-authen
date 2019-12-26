@@ -4,4 +4,5 @@ WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y apt-utils mariadb-client
 
-CMD make run
+CMD make prepare && make run
+# CMD make run

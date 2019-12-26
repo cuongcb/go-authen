@@ -2,6 +2,10 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
+	"time"
+
+	// standar mysql
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/cuongcb/go-authen/internal/service/model"
@@ -12,13 +16,18 @@ type Dao struct {
 	db *sql.DB
 }
 
-const dataSourceName = "root:Bacuong304@@tcp(127.0.0.1:3306)/db?parseTime=true"
+const dataSourceName = "root:root@tcp(cont_mysql)/appdb?parseTime=true"
 
 // New ...
 func New() (*Dao, error) {
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		return nil, err
+	}
+
+	for db.Ping() != nil {
+		fmt.Println("cannot ping to db")
+		time.Sleep(1 * time.Second)
 	}
 
 	return &Dao{db: db}, nil
@@ -54,8 +63,10 @@ func (d *Dao) GetAll() ([]*model.User, error) {
 	}
 	defer rows.Close()
 
-	if !rows.Next() {
+	hasRows := rows.Next()
+	if !hasRows {
 		if err := rows.Err(); err != nil {
+			fmt.Println(err)
 			return nil, err
 		}
 
@@ -63,17 +74,20 @@ func (d *Dao) GetAll() ([]*model.User, error) {
 	}
 
 	var users []*model.User
-	for rows.Next() {
+	for hasRows {
 		u := &model.User{}
 		if err := rows.Scan(&u.ID,
 			&u.CreatedAt,
 			&u.UpdatedAt,
 			&u.Email,
 			&u.Password); err != nil {
+			fmt.Println(err)
 			return nil, err
 		}
 
 		users = append(users, u)
+
+		hasRows = rows.Next()
 	}
 
 	return users, rows.Err()

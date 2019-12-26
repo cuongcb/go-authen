@@ -4,11 +4,12 @@ services:
   go-authen:
     build:
       context: ../
-      dockerfile: ./build/docker/Dockerfile
+      dockerfile: ./build/docker/go-authen.Dockerfile
     volumes:
       - ../:/app
     working_dir: /app
     image: go-authen
+    container_name: cont_authen
     environment:
       - MYSQL_HOST=appdb
       - MYSQL_USER=root
@@ -22,6 +23,7 @@ services:
 
   appdb:
     image: mysql:5.7
+    container_name: cont_mysql
     ports:
       - "3306:3306"
     environment:
@@ -29,5 +31,6 @@ services:
 
   redis:
     image: redis:5.0.2-alpine
+    container_name: cont_redis
     ports:
       - "6379:6379"
