@@ -1,22 +1,31 @@
 package service
 
 import (
+	"time"
+
 	"github.com/cuongcb/go-authen/internal/dtos"
+	"github.com/cuongcb/go-authen/internal/service/cache"
 	"github.com/cuongcb/go-authen/internal/service/dao/mysql"
 	"github.com/cuongcb/go-authen/internal/service/model"
 )
 
 type serviceContext struct {
-	repo repository
+	repo  reposer
+	cache cacher
 }
 
 var ctx serviceContext
 
-type repository interface {
+type reposer interface {
 	Get(uint64) (*model.User, error)
 	GetByMail(string) (*model.User, error)
 	GetAll() ([]*model.User, error)
 	Save(*model.User) (*model.User, error)
+}
+
+type cacher interface {
+	Set(string, string, time.Duration) error
+	Get(string) (string, error)
 }
 
 // Init ...
@@ -26,8 +35,14 @@ func Init() {
 		panic(err)
 	}
 
+	cache, err := cache.New()
+	if err != nil {
+		panic(err)
+	}
+
 	ctx = serviceContext{
-		repo: repo,
+		repo:  repo,
+		cache: cache,
 	}
 }
 
