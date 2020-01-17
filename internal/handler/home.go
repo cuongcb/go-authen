@@ -8,22 +8,18 @@ import (
 	"github.com/cuongcb/go-authen/internal/service"
 )
 
-// Home ...
-var Home = func(w http.ResponseWriter, r *http.Request) {
+// User ...
+var User = func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-type", "application/json")
 
 	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(map[string]string{"error": "not supported method"})
-
+		responseError(w, http.StatusMethodNotAllowed)
 		return
 	}
 
 	users, err := service.GetUserList()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
-
+		responseError(w, http.StatusInternalServerError)
 		return
 	}
 

@@ -15,7 +15,7 @@ func main() {
 	service.Init()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler.Home)
+	mux.HandleFunc("/user", handler.User)
 	mux.HandleFunc("/login", handler.Login)
 	mux.HandleFunc("/register", handler.Register)
 
