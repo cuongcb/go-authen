@@ -147,3 +147,8 @@ func VerifyUser(email, password string) (*dtos.User, error) {
 		Password: user.Password,
 	}, nil
 }
+
+// Session ...
+func Session(key string) (string, error) {
+	return ctx.cache.Get(key)
+}
