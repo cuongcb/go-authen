@@ -2,16 +2,16 @@ run:
 	@go run ./cmd/go-authen/main.go
 
 base:
-	@cd ./deployments && docker-compose up appdb redis &
+	@docker-compose -f deployments/docker-compose.yml up appdb redis &
 
 up:
-	@cd ./deployments && docker-compose up go-authen &
+	@docker-compose -f deployments/docker-compose.yml up go-authen &
 
 down:
-	@cd ./deployments && docker-compose stop go-authen
+	@docker-compose -f deployments/docker-compose.yml stop go-authen
 
 down-base:
-	@cd ./deployments && docker-compose stop appdb redis
+	@docker-compose -f deployments/docker-compose.yml stop appdb redis
 
 prepare:
 	@cd ./scripts/mysql && ./entry_point.sh

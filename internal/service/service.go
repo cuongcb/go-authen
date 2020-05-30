@@ -1,12 +1,16 @@
 package service
 
 import (
+	"errors"
 	"time"
 
 	"github.com/cuongcb/go-authen/internal/dtos"
 	"github.com/cuongcb/go-authen/internal/service/cache"
 	"github.com/cuongcb/go-authen/internal/service/dao/mysql"
+	"github.com/cuongcb/go-authen/internal/service/log"
 	"github.com/cuongcb/go-authen/internal/service/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type serviceContext struct {
@@ -48,9 +52,19 @@ func Init() {
 
 // CreateUser ...
 func CreateUser(email, password string) (*dtos.User, error) {
+	if _, err := ctx.repo.GetByMail(email); err == nil {
+		// duplicate user
+		return nil, errors.New("duplicate user")
+	}
+
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, errors.New("internal server error")
+	}
+
 	user, err := ctx.repo.Save(&model.User{
 		Email:    email,
-		Password: password,
+		Password: string(hashedPass),
 	})
 	if err != nil {
 		return nil, err
@@ -112,4 +126,29 @@ func GetUserByMail(email string) (*dtos.User, error) {
 		Email:    user.Email,
 		Password: user.Password,
 	}, nil
+}
+
+// VerifyUser ...
+func VerifyUser(email, password string) (*dtos.User, error) {
+	user, err := ctx.repo.GetByMail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		log.Log(err)
+		return nil, err
+	}
+
+	return &dtos.User{
+		ID:       user.ID,
+		Email:    user.Email,
+		Password: user.Password,
+	}, nil
+}
+
+// Session ...
+func Session(key string) (string, error) {
+	return ctx.cache.Get(key)
 }
